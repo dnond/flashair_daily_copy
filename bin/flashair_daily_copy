@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'bundler/setup'
+require 'flashair_daily_copy'
+
+FlashairDailyCopy::CLI.run
