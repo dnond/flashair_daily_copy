@@ -1,7 +1,7 @@
-# require o'open-uri'
 require 'httpclient'
 require 'csv'
 require 'hashie'
+require 'resolv'
 
 module FlashairDailyCopy
   class Api
@@ -15,14 +15,21 @@ module FlashairDailyCopy
         end
       end
 
-      private
-
-      def get_csv(api_url)
-        HTTPClient.new.get_content(api_url)
+      def hostname_is_available?
+        Resolv.getaddress hostname
+        return true
+      rescue Resolv::ResolvError
+        return false
       end
 
       def hostname
         ENV['FLASHAIR_HOSTNAME'] || 'myflashair.local'
+      end
+
+      private
+
+      def get_csv(api_url)
+        HTTPClient.new.get_content(api_url)
       end
 
       def url_for_files(path)
