@@ -15,5 +15,13 @@ module FlashairDailyCopy
         end
       end
     end
+
+    desc 'check_available', 'check availablity'
+    def self.check_available
+      puts Api.hostname_is_available? ? 1 : 0
+    end
+
+    private
+
   end
 end
