@@ -17,6 +17,27 @@ describe FlashairDailyCopy::Api do
     end
   end
 
+  describe '.hostname_is_valid?' do
+    let(:hostname) { 'myflashair.local' }
+    subject { described_class.hostname_is_available? }
+
+    context 'when hostname is available' do
+      before do
+        allow(Resolv).to receive(:getaddress).with(hostname)
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context 'when hostname is unavailable' do
+      before do
+        allow(Resolv).to receive(:getaddress).with(hostname).and_raise(Resolv::ResolvError)
+      end
+
+      it { is_expected.to be false }
+    end
+  end
+
   describe 'datetime in CSV' do
     let(:date_val) { 18743 }
     let(:time_val) { 41029 }
