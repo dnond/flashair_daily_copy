@@ -2,6 +2,7 @@ require 'httpclient'
 require 'csv'
 require 'hashie'
 require 'resolv'
+require 'pry'
 
 module FlashairDailyCopy
   class Api
@@ -10,9 +11,14 @@ module FlashairDailyCopy
         [].tap do |list|
           csv = get_csv(url_for_files(path))
           CSV.parse(csv).each do |row|
-            list.push fileinfo_with row if row.count == 6
+            list << fileinfo_with(row) if row.count == 6
           end
         end
+      end
+
+      def image_dirs
+        path = '/DCIM'
+        files(path).reject { |file| file.filename == '100__TSB' }.map{ |file| "/DCIM/#{file.filename}" }
       end
 
       def hostname_is_available?
@@ -61,18 +67,18 @@ module FlashairDailyCopy
       end
 
       def parse_date(date_val)
-        binary_num = date_val.to_i.to_s(2)
-        day  = binary_num.slice!(-5, 5).to_i(2)
-        mon  = binary_num.slice!(-4, 4).to_i(2)
-        year = binary_num.to_i(2) + 1980
+        binary_num = sprintf("%016d", date_val.to_i.to_s(2))
+        year = binary_num.slice!(0, 7).to_i(2) + 1980
+        mon  = binary_num.slice!(0, 4).to_i(2)
+        day  = binary_num.to_i(2)
         [year, mon, day]
       end
 
       def parse_time(time_val)
-        binary_num = time_val.to_i.to_s(2)
-        sec  = binary_num.slice!(-5, 5).to_i(2) * 2
-        min  = binary_num.slice!(-6, 6).to_i(2)
-        hour = binary_num.to_i(2)
+        binary_num = sprintf("%016d", time_val.to_i.to_s(2))
+        hour = binary_num.slice!(0, 5).to_i(2)
+        min  = binary_num.slice!(0, 6).to_i(2)
+        sec  = binary_num.to_i(2)
         [hour, min, sec]
       end
     end

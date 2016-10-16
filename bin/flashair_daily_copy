@@ -3,11 +3,11 @@
 require 'bundler/setup'
 require 'flashair_daily_copy'
 
-if FlashairDailyCopy::Api.hostname_is_available?
+begin
   puts "starting copy..."
   FlashairDailyCopy::CLI.run
   puts "end copy..."
-else
-  puts "#{FlashairDailyCopy::Api.hostname} is not available"
+rescue => e
+  puts "*not available*"
+  puts e
 end
-
