@@ -7,11 +7,13 @@ module FlashairDailyCopy
     def self.run
       # TODO: 他のディレクトリも読めるようにする
       path = '/DCIM/101OLYMP'
-      Api.files(path).each do |file|
-        daily_local_image = DailyLocalImage.new(file.filename, file.datetime).filename
+      Api.image_dirs.each do |path|
+        Api.files(path).each do |file|
+          daily_local_image = DailyLocalImage.new(file.filename, file.datetime).filename
 
-        unless File.exists? daily_local_image
-          RemoteImage.new(file.url).download(daily_local_image)
+          unless File.exists? daily_local_image
+            RemoteImage.new(file.url).download(daily_local_image)
+          end
         end
       end
     end
